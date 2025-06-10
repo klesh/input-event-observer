@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>键盘鼠标事件观测器</title>
+    <style>
+        html, body, #container {
+            height: 100%;
+            font-family: monospace;
+            font-size: 12px;
+            background: #e1e1e1;
+        }
+        #container p b {
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+    </div>
+    <script>
+        const src = document.getElementById("container");
+        const logs = document.getElementById("container");
+        const audioKey = new Audio('assets/key.wav');
+        const audioBtn = new Audio('assets/button.wav');
+
+        function log(line) {
+            logs.innerHTML += `<p>[${new Date().toLocaleString()}] ${line}</p>`;
+            while (logs.scrollHeight > logs.offsetHeight) {
+                logs.firstElementChild.remove()
+            }
+        }
+
+        src.addEventListener("wheel",function(e){
+            const x = e.deltaX
+            const y = e.deltaY
+            log(`🖱️ 滚轮滚动    水平方向: ${x}      垂直方向: ${y}`);
+            event.preventDefault();
+            return false;
+        });
+
+        src.addEventListener("mousemove",function(e){
+            const x = e.movementX
+            const y = e.movementY
+            log(`🖱️ 鼠标移动    水平方向: ${x}      垂直方向: ${y}`);
+        });
+
+        function keyevent(type,event) {
+            const key = event.key.toUpperCase()
+            log(`⌨️ 键盘按键:  <b>${key}</b>        事件: ${type}`);
+            event.preventDefault();
+            audioKey.play();
+            return false;
+        }
+
+        document.addEventListener("keydown", e => keyevent("⬇️ 按下", e),  false);
+        document.addEventListener("keyup", e => keyevent("⬆️ 释放", e),  false);
+
+        function buttonevent(type,event) {
+            const btn = event.button == 0 ? "左" : event.button == 1 ? "中" : "右";
+            log(`🖰 鼠标按钮:  <b>${btn}</b>        事件: ${type}`);
+            event.preventDefault();
+            audioBtn.play();
+            return false;
+        }
+
+        document.addEventListener("mouseup", e => buttonevent("⬆️ 释放", e),  false);
+        document.addEventListener("mousedown", e => buttonevent("⬇️ 按下", e),  false);
+        document.oncontextmenu = () => false;
+    </script>
+</body>
+</html>
